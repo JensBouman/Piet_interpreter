@@ -1,0 +1,337 @@
+<?xml version='1.0' encoding='utf-8'?>
+<interface>
+  <object id="rootWindow" class="ttk.Frame">
+    <property name="height">200</property>
+    <property name="width">200</property>
+    <layout>
+      <property name="column">0</property>
+      <property name="propagate">True</property>
+      <property name="row">0</property>
+    </layout>
+    <child>
+      <object id="optionBar" class="ttk.Frame">
+        <property name="borderwidth">2</property>
+        <property name="height">200</property>
+        <property name="width">200</property>
+        <layout>
+          <property name="column">0</property>
+          <property name="propagate">True</property>
+          <property name="row">0</property>
+          <rows>
+            <row id="0">
+              <property name="weight">0</property>
+            </row>
+          </rows>
+        </layout>
+        <child>
+          <object id="loadFileButton" class="ttk.Button">
+            <property name="command">loadFile</property>
+            <property name="text" translatable="yes">Open File</property>
+            <property name="width">7.5</property>
+            <layout>
+              <property name="column">0</property>
+              <property name="ipadx">5</property>
+              <property name="ipady">2</property>
+              <property name="padx">10</property>
+              <property name="pady">2</property>
+              <property name="propagate">True</property>
+              <property name="row">0</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object id="fileNameEntry" class="ttk.Entry">
+            <property name="exportselection">false</property>
+            <property name="text" translatable="yes">../../Add.png</property>
+            <property name="width">44</property>
+            <layout>
+              <property name="column">1</property>
+              <property name="ipady">2</property>
+              <property name="propagate">True</property>
+              <property name="row">0</property>
+              <property name="sticky">w</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object id="setScale" class="ttk.Button">
+            <property name="command">setScale</property>
+            <property name="text" translatable="yes">Set scale</property>
+            <property name="textvariable">int:scaleSize</property>
+            <layout>
+              <property name="column">2</property>
+              <property name="ipadx">5</property>
+              <property name="ipady">2</property>
+              <property name="padx">10</property>
+              <property name="propagate">True</property>
+              <property name="row">0</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object id="scaleEntry" class="ttk.Entry">
+            <property name="text" translatable="yes">25</property>
+            <layout>
+              <property name="column">3</property>
+              <property name="ipady">2</property>
+              <property name="propagate">True</property>
+              <property name="row">0</property>
+            </layout>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object id="actionBar" class="ttk.Frame">
+        <property name="height">200</property>
+        <property name="width">200</property>
+        <layout>
+          <property name="column">0</property>
+          <property name="padx">7</property>
+          <property name="propagate">True</property>
+          <property name="row">1</property>
+          <rows>
+            <row id="0">
+              <property name="pad">5</property>
+            </row>
+          </rows>
+          <columns>
+            <column id="0">
+              <property name="pad">15</property>
+            </column>
+            <column id="1">
+              <property name="pad">10</property>
+            </column>
+            <column id="2">
+              <property name="pad">15</property>
+            </column>
+          </columns>
+        </layout>
+        <child>
+          <object id="runProgram" class="ttk.Button">
+            <property name="command">runProgram</property>
+            <property name="text" translatable="yes">Run program</property>
+            <layout>
+              <property name="column">0</property>
+              <property name="propagate">True</property>
+              <property name="row">0</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object id="executionSpeed" class="ttk.Scale">
+            <property name="command">setExecutionSpeed</property>
+            <property name="from_">0</property>
+            <property name="orient">horizontal</property>
+            <property name="to">100</property>
+            <property name="value">15</property>
+            <property name="variable">int:pos</property>
+            <layout>
+              <property name="column">1</property>
+              <property name="propagate">True</property>
+              <property name="row">0</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object id="takeStep" class="ttk.Button">
+            <property name="command">takeStep</property>
+            <property name="text" translatable="yes">takeStep</property>
+            <layout>
+              <property name="column">2</property>
+              <property name="padx">15</property>
+              <property name="propagate">True</property>
+              <property name="row">0</property>
+              <property name="sticky">e</property>
+            </layout>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object id="content" class="ttk.Frame">
+        <property name="height">200</property>
+        <property name="width">200</property>
+        <layout>
+          <property name="column">0</property>
+          <property name="propagate">True</property>
+          <property name="row">2</property>
+          <rows>
+            <row id="0">
+              <property name="minsize">0</property>
+            </row>
+            <row id="1">
+              <property name="minsize">0</property>
+            </row>
+          </rows>
+        </layout>
+        <child>
+          <object id="generalInfoFrame" class="ttk.Frame">
+            <property name="height">200</property>
+            <property name="width">200</property>
+            <layout>
+              <property name="column">0</property>
+              <property name="propagate">True</property>
+              <property name="row">0</property>
+              <property name="sticky">n</property>
+              <rows>
+                <row id="0">
+                  <property name="pad">5</property>
+                </row>
+                <row id="1">
+                  <property name="minsize">0</property>
+                </row>
+                <row id="2">
+                  <property name="pad">0</property>
+                </row>
+                <row id="3">
+                  <property name="pad">15</property>
+                </row>
+              </rows>
+            </layout>
+            <child>
+              <object id="codelInfoLabel" class="ttk.Label">
+                <property name="text" translatable="yes">Codel info:</property>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="propagate">True</property>
+                  <property name="row">0</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object id="positionInfoMessage" class="tk.Message">
+                <property name="background">#ffffff</property>
+                <property name="highlightcolor">#a7a7a7</property>
+                <property name="highlightthickness">1</property>
+                <property name="text" translatable="yes">Selected codel contains the following positions:
+- (0,0)
+- (0,1)</property>
+                <property name="width">150</property>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="padx">5</property>
+                  <property name="propagate">True</property>
+                  <property name="row">1</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object id="codelEdgesMessage" class="tk.Message">
+                <property name="background">#FFFFFF</property>
+                <property name="highlightcolor">#a7a7a7</property>
+                <property name="highlightthickness">1</property>
+                <property name="text" translatable="yes">Codel edges are as follows: 
+
+(0,1) -&gt; (1,0) push 0</property>
+                <property name="width">150</property>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="propagate">True</property>
+                  <property name="row">2</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object id="setBreakPoint" class="ttk.Button">
+                <property name="command">setBreakpoint</property>
+                <property name="text" translatable="yes">Set breakpoint</property>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="propagate">True</property>
+                  <property name="row">3</property>
+                </layout>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object id="stackInfoFrame" class="ttk.Frame">
+            <property name="height">200</property>
+            <property name="width">200</property>
+            <layout>
+              <property name="column">1</property>
+              <property name="propagate">True</property>
+              <property name="row">0</property>
+              <property name="sticky">n</property>
+            </layout>
+            <child>
+              <object id="stackInfo" class="ttk.Label">
+                <property name="anchor">center</property>
+                <property name="text" translatable="yes">Stack</property>
+                <property name="width">15</property>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="propagate">True</property>
+                  <property name="row">0</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object id="Message_4" class="tk.Message">
+                <property name="background">#ffffff</property>
+                <property name="highlightcolor">#a7a7a7</property>
+                <property name="highlightthickness">1</property>
+                <property name="text" translatable="yes">2
+15
+4
+0</property>
+                <property name="width">150</property>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="propagate">True</property>
+                  <property name="row">1</property>
+                </layout>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object id="canvasFrame" class="ttk.Frame">
+            <property name="height">200</property>
+            <property name="width">200</property>
+            <layout>
+              <property name="column">2</property>
+              <property name="propagate">True</property>
+              <property name="row">0</property>
+            </layout>
+            <child>
+              <object id="canvas" class="tk.Canvas">
+                <property name="background">#ffffff</property>
+                <property name="height">400</property>
+                <property name="highlightbackground">#8a8a8a</property>
+                <property name="highlightthickness">1</property>
+                <property name="width">700</property>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="propagate">True</property>
+                  <property name="row">0</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object id="Scrollbar_1" class="ttk.Scrollbar">
+                <property name="orient">vertical</property>
+                <layout>
+                  <property name="column">1</property>
+                  <property name="propagate">True</property>
+                  <property name="row">0</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object id="Scrollbar_2" class="ttk.Scrollbar">
+                <property name="orient">horizontal</property>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="propagate">True</property>
+                  <property name="row">1</property>
+                </layout>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>
