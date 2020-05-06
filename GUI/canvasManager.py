@@ -51,7 +51,7 @@ class canvasManager():
         self.colorCodel(codel, color, "#000000")
 
     def colorCodel(self, codel, fill, outline):
-        for position in codel:
-            x = position[0] * self.scaleSize
-            y = position[1] * self.scaleSize
+        for position in codel.codel:
+            x = position.coords[0] * self.scaleSize
+            y = position.coords[1] * self.scaleSize
             self.canvas.create_rectangle(x,y, x+self.scaleSize - 1, y+self.scaleSize - 1, fill=fill, outline=outline)

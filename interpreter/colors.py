@@ -1,7 +1,8 @@
-from typing import Dict
+from typing import Dict, Union
 
 import numpy as np
 
+import interpreter.errors as errors
 
 class possiblePixels:
     def __init__(self):
@@ -29,16 +30,38 @@ class possiblePixels:
         self.black = [0, 0, 0]
 
 
-def getPixelChange(colorStart: np.ndarray, colorEnd: np.ndarray) -> Dict[str, int]:
-    pixelsColors = possiblePixels()
+def getPixelChange(colorStart: np.ndarray, colorEnd: np.ndarray) -> Union[Dict[str, int], BaseException]:
+    """
+    Gets the Hue change and the light change from two different colors
+    :param colorStart: Starting color
+    :param colorEnd: Final color
+    :return: Either a dictionary {'hueChange': int, 'lightChange': int}, or an Exception
+    """
+    if type(colorStart) is not np.ndarray:
+        return TypeError("Start color is not of type np.ndarray, but {}".format(type(colorStart)))
+    if type(colorEnd) is not np.ndarray:
+        return TypeError("End color is not of type np.ndarray, but {}".format(type(colorStart)))
+    if len(colorStart) < 3:
+        return ValueError("Start color does contain at least 3 values, but {}".format(colorStart))
+    if len(colorEnd) < 3:
+        return ValueError("Start color does contain at least 3 values, but {}".format(colorEnd))
 
 
+    # If either the starting or leaving color is white, there is no change (It is considered a noop)
     if isWhite(colorStart) or isWhite(colorEnd):
         return {"hueChange": 0, "lightChange": 0}
 
+    pixelsColors = possiblePixels()
     # Converting np arrays to common lists
     colorStart = list(colorStart)[:3]
     colorEnd = list(colorEnd)[:3]
+
+
+    if colorStart not in pixelsColors.colors:
+        return errors.UnknownColorError("Color {} is not recognized as a correct color".format(colorStart))
+    if colorEnd not in pixelsColors.colors:
+        return errors.UnknownColorError("Color {} is not recognized as a correct color".format(colorEnd))
+
     indexStart = pixelsColors.colors.index(colorStart)
     indexEnd = pixelsColors.colors.index(colorEnd)
 
@@ -50,18 +73,33 @@ def getPixelChange(colorStart: np.ndarray, colorEnd: np.ndarray) -> Dict[str, in
 
 
 def isWhite(testColor: np.ndarray) -> bool:
+    """
+    Compares the color to white
+    :param testColor: Input color
+    :return: Boolean whether the input color is white (255, 255, 255)
+    """
     colors = possiblePixels()
     testColor = list(testColor)[:3]
     return testColor == colors.white
 
 
 def isBlack(testColor: np.ndarray) -> bool:
+    """
+    Compares the color to black
+    :param testColor: Input color
+    :return: Boolean whether the input color is black (0, 0, 0)
+    """
     colors = possiblePixels()
     testColor = list(testColor)[:3]
     return testColor == colors.black
 
 
 def isColor(testColor: np.ndarray) -> bool:
+    """
+    Compares the color to the 18 pre-defined Piet colors
+    :param testColor: Input color
+    :return: Boolean whether the input color is a Piet-color
+    """
     colors = possiblePixels()
     testColor = list(testColor)[:3]
     return testColor in colors.colors

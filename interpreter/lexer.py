@@ -1,138 +1,148 @@
-from typing import List, Tuple, Set, Dict, Union
-
+from typing import List, Union, Tuple
+import copy
 import numpy as np
 
 import interpreter.colors as colors
 import interpreter.imageWrapper as imageWrapper
-import interpreter.lexerTokens as lexerTokens
+import interpreter.tokens as tokens
+import interpreter.helperFunctions as helperFunctions
 import interpreter.movement as movement
+from interpreter.dataStructures import position, codel, edge, graphNode, graph, direction
 
 
-def cyclePosition(image: np.ndarray, startPosition: Tuple[int, int]) -> Union[Tuple[int, int], bool]:
+def cyclePosition(image: np.ndarray, startPosition: position) -> Union[position, bool]:
     """
     :param image: numpy image array
     :param startPosition: from where to go to Tuple (x,y)
-    :return: newPosition (x,y), or false if new position would fall out of bounds
+    :return: newPosition (x,y), or false if new coords would fall out of bounds
     """
     if not imageWrapper.boundsChecker(image, startPosition):
         return False
 
-    if startPosition[0] == image.shape[1] - 1:
-        if startPosition[1] < image.shape[0] - 1:
-            return (0, startPosition[1] + 1)
-        else:
-            return False
-    else:
-        return (startPosition[0] + 1, startPosition[1])
+    if startPosition.coords[0] == image.shape[1] - 1:
+        if startPosition.coords[1] < image.shape[0] - 1:
+            return position((0, startPosition.coords[1] + 1))
+        return False
+    return position((startPosition.coords[0] + 1, startPosition.coords[1]))
 
 
-
-def getCodelsEfficient(image: np.ndarray, positionList: List[Tuple[int, int]]) -> List[Set[Tuple[int, int]]]:
+def getCodels(image: np.ndarray, positionList: List[position]) -> List[codel]:
+    """
+    Makes a list of codels from an image and a lits of positions to check
+    :param image: an np.ndarray representing the image
+    :param positionList: A list of positions, for which to find adjacent pixels of the same color
+    :return: A list of codels found in the given image
+    """
     if len(positionList) == 0:
         return []
+
     copiedList = positionList.copy()
     newPosition = copiedList.pop(0)
 
-
     if colors.isBlack(imageWrapper.getPixel(image, newPosition)):
-        return getCodelsEfficient(image, copiedList)
+        return getCodels(image, copiedList)
 
     newCodel = imageWrapper.getCodel(image, newPosition)
 
-    # print("Original positionList: {}".format(positionList))
-    # print("Codel found: {}".format(newCodel))
-    # Remove found positions from position list
-    copiedList = list(set(copiedList) - newCodel)
-    # print("New positionList: {}".format(copiedList))
-    codelList = getCodelsEfficient(image, copiedList)
+    # Remove found positions from coords list
+    copiedList = list(set(copiedList) - newCodel.codel)
+    codelList = getCodels(image, copiedList)
 
     codelList.append(newCodel)
     return codelList
 
 
-
-
-def getAllCodels(image: np.ndarray, position: Tuple[int, int] = (0, 0),
-                 foundCodels: List[Set[Tuple[int, int]]] = None) -> List[Set[Tuple[int, int]]]:
-    if foundCodels is None:
-        foundCodels = []
-
-    # Checks if the current position is already in a found codel, and also if the current pixel is white or black
-    if (True in map(lambda codelSet, lambdaPosition=position: lambdaPosition in codelSet, foundCodels)) or colors.isBlack(imageWrapper.getPixel(image, position)):
-        nextPosition = cyclePosition(image, position)
-        if type(nextPosition) == bool and not nextPosition:
-            return foundCodels
-        return getAllCodels(image, nextPosition, foundCodels)
-
-    newCodel = imageWrapper.getCodel(image, position)
-    foundCodels.append(newCodel)
-
-    nextPosition = cyclePosition(image, position)
-    if type(nextPosition) == bool and nextPosition is False:
-        return foundCodels
-    else:
-        return getAllCodels(image, nextPosition, foundCodels)
-
-
-def edgesToCodeldict(image: np.ndarray, edges: List[Tuple[Tuple[int, int], Tuple[int, int]]]) -> Dict[int, Tuple[lexerTokens.baseLexerToken, Tuple[int, int]]]:
+def edgesToGraphNode(image: np.ndarray, edges: List[edge]) -> Tuple[graphNode, List[BaseException]]:
     """
-    Constructs a dictionary with each pointer possibility as key and (token, position) as value
+    Constructs a dictionary with each pointer possibility as key and (token, coords) as value
     :param image: Image required to find calculate tokens
-    :param edges: List[Tuple[position, pointers]]
-    :return:
+    :param edges: List[Tuple[coords, pointers]]
+    :return: A graphNode containing tokens for each edge given, and a list of exceptions occurred during creation
     """
-    return dict(map(lambda x, lambdaImage=image: (hash(x[1]), (lexerTokens.edgeToToken(lambdaImage, x), x[0])), edges))
+    node = graphNode(dict(map(lambda x, lambdaImage=image: (x.edge[1], (helperFunctions.edgeToToken(lambdaImage, x), x.edge[0])), edges)))
+    # Extract the exceptions from each edge
+    exceptions = list(map(lambda x: x[1][0], filter(lambda graphNodeItem: isinstance(graphNodeItem[1][0], BaseException), node.graphNode.items())))
+    return (node, exceptions)
 
 
-def isCodeldictTerminate(codelDict: Dict[int, Tuple[lexerTokens.baseLexerToken, Tuple[int, int]]]) -> bool:
-    return all(map(lambda x: isinstance(x[1][0], lexerTokens.toBlackToken), codelDict.items()))
+def isGraphNodeTerminate(inputNode: graphNode) -> bool:
+    """
+    Gets the token from the graphNode, and compares it against the toBlackToken from tokens.
+    :param inputNode: A graph node
+    :return: True if all tokens in graph node are toBlackTokens, False otherwise.
+    """
+    return all(map(lambda x: isinstance(x[1][0], tokens.toBlackToken), inputNode.graphNode.items()))
 
 
-def codelDictToTerminate(codelDict: Dict[int, Tuple[lexerTokens.baseLexerToken, Tuple[int, int]]]) -> Dict[int, Tuple[lexerTokens.terminateToken, Tuple[int, int]]]:
-    return dict(map(lambda x: (x[0], (lexerTokens.terminateToken(), x[1][1])), codelDict.items()))
+def graphNodeToTerminate(inputNode: graphNode) -> graphNode:
+    """
+    Replaces all tokens in the graphNode to terminate tokens
+    :param inputNode: A graph node
+    :return: A new graph node with only terminateTokens
+    """
+    return graphNode(dict(map(lambda x: (x[0], (tokens.terminateToken(), x[1][1])), inputNode.graphNode.items())))
 
 
-def codelToCodelDict(image: np.ndarray, codel: Set[Tuple[int, int]], edgePointers: List[Tuple[int, int]]) -> Dict[int, Tuple[lexerTokens.baseLexerToken, Tuple[int, int]]]:
+def codelToGraphNode(image: np.ndarray, inputCodel: codel, edgePointers: List[direction]) -> Tuple[graphNode, List[BaseException]]:
     """
     :param image: image
-    :param codel: set of positions within the same color
+    :param inputCodel: set of positions within the same color
     :param edgePointers: list of pointers to find tokens for
-    :return: A dictionary with each pointer possibility as key and (token, position) as value
+    :return: A dictionary with each pointer possibility as key and (token, coords) as value, and a list of exceptions
     """
     # make codel immutable
-    copiedCodel = frozenset(codel)
+    copiedCodel = copy.copy(inputCodel)
     # Find all edges along the codel and edgepointers
-    edges = list(map(lambda pointers, lambdaCodel=copiedCodel: (movement.findEdge(lambdaCodel, pointers), pointers), edgePointers))
-    codelDict = edgesToCodeldict(image, edges)
+    edges = list(map(lambda pointers, lambdaCodel=copiedCodel: edge((movement.findEdge(lambdaCodel, pointers), pointers)), edgePointers))
+    newGraphNode = edgesToGraphNode(image, edges)
 
-    if isCodeldictTerminate(codelDict):
-        codelDict = codelDictToTerminate(codelDict)
+    # If there were exceptions in the graph node, there is no need to terminate them
+    if len(newGraphNode[1]) > 0:
+        return newGraphNode
 
-    return codelDict
+    # Check if all tokens go either towards black pixels, or towards the edge. If thats the case, this is a terminate-node
+    if isGraphNodeTerminate(newGraphNode[0]):
+        return (graphNodeToTerminate(newGraphNode[0]), newGraphNode[1])
+
+    return newGraphNode
+
+def codelsToGraph(image: np.ndarray, codels: List[codel]) -> Tuple[graph, List[BaseException]]:
+    """
+    Converts a list of codels into a graph
+    :param image: Input image
+    :param codels: Input list of codels
+    :return: A tuple of a graph and a list of exceptions
+    """
+    codels = codels.copy()
+    # Get an iterator of all possible directions (0,0), (0,1), (1,0) etc...
+    edgePointers = list(map(lambda i: direction((i % 4, int(i / 4))), iter(range(8))))
+
+    # If no more codels are to be graphed, return
+    if len(codels) == 0:
+        newGraph = graph(dict())
+        return (newGraph, [])
+
+    newNode = codelToGraphNode(image, codels[0], edgePointers)
+    newGraph = codelsToGraph(image, codels[1:])
+    newGraph[0].graph[codels[0]] = newNode[0]
+
+    errorList = newNode[1]
+    errorList.extend(newGraph[1])
+    return (newGraph[0], errorList)
 
 
-def graphImage(image: np.ndarray, position: Tuple[int, int] = (0, 0)) -> Dict[int, Dict[int, Tuple[lexerTokens.baseLexerToken, Tuple[int, int]]]]:
+def graphImage(image: np.ndarray) -> Tuple[graph, List[BaseException]]:
     """
     Returns a dict with hashes of each codel as keys, and a codelDict as value. That codelDict contains hashed pointers (Tuple[int, int]) as keys to tokens as values.
     :param image:
-    :param position:
     :return:
     """
-    # allCodels = getAllCodels(image, position)
-    allPositions = []
-    whiteCodels = []
-    print(image)
-    for y, row in enumerate(image):
-        for x, pixel in enumerate(row):
-            if not colors.isBlack(pixel):
-                if colors.isWhite(pixel):
-                    whiteCodels.append((x,y))
-                else:
-                    allPositions.append((x,y))
-    print(len(allPositions))
-
-
-    allCodels = getCodelsEfficient(image, allPositions)
-    # Get an iterator of all possible pointers
-    edgePointers = list(map(lambda i: (i % 4, int(i / 4)), iter(range(8))))
-    return dict(map(lambda x: (hash(frozenset(x)), codelToCodelDict(image, x, edgePointers)), allCodels))
+    coords = np.ndindex(image.shape[1], image.shape[0])
+    # Converts tuples of coordinates into position objects
+    positions = map(position, coords)
+    # Makes a list of non-black pixel positions
+    nonBlackPositions = list(filter(lambda pos: not colors.isBlack(imageWrapper.getPixel(image, pos)), positions))
+    # Gets all codels from all non-black pixel positions
+    allCodels = getCodels(image, nonBlackPositions)
+    # Makes a graph with the codel as key, and the node as value
+    return codelsToGraph(image, allCodels)

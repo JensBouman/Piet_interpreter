@@ -1,20 +1,20 @@
 # helloworld.py
-from time import sleep
-import threading
-import tkinter as tk
 import pygubu
+import sys
+import os
 
-import interpreter.imageWrapper as imageWrapper
-import interpreter.lexer as lexer
-import interpreter.lexerTokens as lexerTokens
-import interpreter.colors as colors
-import interpreter.movement as movement
-import interpreter.programState as programState
-import interpreter.main as main
+sys.path.insert(0, "GUI/TKinter/.")
+from interpreter import imageWrapper as imageWrapper
+from interpreter import lexer as lexer
+from interpreter import tokens as lexerTokens
+from interpreter import colors as colors
+from interpreter import movement as movement
+from interpreter import executionFunctions as main
+from interpreter.dataStructures import programState, direction, position
 import threading
 
-import infoManager
-import canvasManager
+from GUI import infoManager
+from GUI import canvasManager
 
 
 class GUI:
@@ -41,7 +41,7 @@ class GUI:
         self.builder = builder = pygubu.Builder()
 
         #2: Load an ui file
-        builder.add_from_file('../assets/tkinterLayout.ui')
+        builder.add_from_file("{}/tkinterLayout.ui".format(os.path.abspath(os.path.dirname(__file__))))
 
         #3: Create the mainwindow
         self.mainwindow = builder.get_object('rootWindow')
@@ -63,7 +63,8 @@ class GUI:
             'takeStep': self.takeStep,
             'setExecutionSpeed': self.setExecutionSpeed,
             'setBreakpoint': self.setBreakpoint,
-            'runProgram': self.runProgram
+            'runProgram': self.runProgram,
+            'updateHighlight': self.toggleHighlight
         })
 
         self.canvas.bind("<Button-1>", self.canvasPressed)
@@ -104,10 +105,18 @@ class GUI:
     def setBreakpoint(self):
         print("BREAKPOINT")
 
+    def setFileText(self, filePath):
+        print("Filepath: {}".format(filePath))
+        self.builder.get_object("fileNameEntry", self.optionBar).delete(0, len(self.builder.get_object("fileNameEntry", self.optionBar).get()))
+        self.builder.get_object("fileNameEntry", self.optionBar).insert(0, filePath)
+        print("Get filepath: {}".format(self.builder.get_object("fileNameEntry", self.optionBar).get()))
 
     def setExecutionSpeed(self, pos):
         if 0 < float(pos) < 100:
             self.executionSpeed = float(pos)
+
+    def toggleHighlight(self):
+        print(self.builder.get_object("highlightEdgeCheck", self.actionBar).instate(['selected']))
 
     def getWaitTime(self):
         return self.executionSpeed/100*self.maxWait
@@ -135,9 +144,12 @@ class GUI:
 
     def loadFile(self):
         fileName = self.builder.get_object('fileNameEntry', self.optionBar).get()
+        if len(fileName) < 1:
+            return None
+
         self.image = imageWrapper.getImage(fileName)
-        self.graph = lexer.graphImage(self.image)
-        self.programState = programState.programState(self.graph, (0,0), (0,0))
+        self.graph = lexer.graphImage(self.image)[0]
+        self.programState = programState(self.graph, position((0,0)), direction((0,0)))
 
         self.update()
         print("LOAD FILE!")

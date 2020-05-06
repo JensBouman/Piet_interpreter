@@ -42,7 +42,8 @@
         <child>
           <object id="fileNameEntry" class="ttk.Entry">
             <property name="exportselection">false</property>
-            <property name="text" translatable="yes">../../Add.png</property>
+            <property name="state">normal</property>
+            <property name="text" translatable="yes">Add.png</property>
             <property name="width">44</property>
             <layout>
               <property name="column">1</property>
@@ -143,6 +144,18 @@
               <property name="propagate">True</property>
               <property name="row">0</property>
               <property name="sticky">e</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object id="highlightEdgeCheck" class="ttk.Checkbutton">
+            <property name="command">updateHighlight</property>
+            <property name="text" translatable="yes">Highlight edges</property>
+            <property name="variable">int:0</property>
+            <layout>
+              <property name="column">4</property>
+              <property name="propagate">True</property>
+              <property name="row">0</property>
             </layout>
           </object>
         </child>
