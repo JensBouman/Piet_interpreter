@@ -44,7 +44,9 @@ This interpreter implemented the following should-haves:
 - Custom error messaging in both the Lexing and running steps of the interpreter, for example: detailing which colors at which positions are unknown
 - Advanced Language Features. All Piet commands are implemented, which includes commands such as modulo, stack rolling, and IO
 - Instruction-and-show-off video. Although I haven't made a video, I did make a infographic, detailing how the interpreter works. It can be found [here](#interpreter-infographic)
-- Visualisation through a TKinter GUI, powered by the Pygubu library: ![tkinter layout](/Info/GUI_Layout.png?raw=true)
+- Visualisation through a TKinter GUI, powered by the Pygubu library: 
+
+![tkinter layout](/Info/GUI_Layout.png?raw=true)
 
 ## Limitations
 Too large images will cause the stack to overflow. The maximum size of the image is dependent on the contents.
