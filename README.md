@@ -14,8 +14,8 @@ This interpreter can do the following:
 - Custom errors for unknown colors, unknown tokens, unknown commands and when starting in a black pixel
 - Run .png images
 - Run .gif images
-- Number of steps taken
-- A Graphical User Interface:
+- Output number of steps taken
+- Use a Graphical User Interface:
     - Step-by-step execution of the program
         - Information about the selected codel
         - Information about the stack
