@@ -42,9 +42,9 @@ The must-haves are implemented as follows:
 ### Should-haves
 This interpreter implemented the following should-haves:
 - Custom error messaging in both the Lexing and running steps of the interpreter, for example: detailing which colors at which positions are unknown
-- Visualisation through a TKinter GUI, powered by the Pygubu library
 - Advanced Language Features. All Piet commands are implemented, which includes commands such as modulo, stack rolling, and IO
 - Instruction-and-show-off video. Although I haven't made a video, I did make a infographic, detailing how the interpreter works. It can be found [here](#interpreter-infographic)
+- Visualisation through a TKinter GUI, powered by the Pygubu library: ![tkinter layout](/Info/GUI%20layout.png?raw=true)
 
 ## Limitations
 Too large images will cause the stack to overflow. The maximum size of the image is dependent on the contents.
@@ -120,19 +120,13 @@ This command should open the interface:
 ## Test programs:
 ### Add.png
 This program calculates 2+2 and output it to STDOUT
-![Add](/Add.png?raw=true)
 ### ColorError.png
 This program encounters an error during lexing, and returns the full list of errors.
-![ColorError](/ColorError.png?raw=true&s=300)
 ### Countdown.png
 This program counts down from 10 to 1, outputting each number to STDOUT. This program shows how turing-complete the language is by demonstrating arithmetic functionality, boolean algebra and looping/branching.
-![Countdown](/Countdown.png?raw=true&s=200)
 ### DivideByZero.png
 This program encounters a division by zero error and prints the error to STDOUT
-![DivideByZero](/DivideByZero.png?raw=true&s=500)
 ### Endless.png
 This program loops endlessly, or until the stack overflows
-![Endless.png](/Endless.png?raw=true&s=500)
 ### HelloWorld.png
 Outputs Hello World! to STDOUT
-![HelloWorld](/HelloWorld.png?raw=true&s=500)
