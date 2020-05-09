@@ -123,19 +123,16 @@ This program calculates 2+2 and output it to STDOUT
 ![Add](/Add.png?raw=true)
 ### ColorError.png
 This program encounters an error during lexing, and returns the full list of errors.
-![ColorError](/ColorError.png?raw=true)
+![ColorError](/ColorError.png?raw=true&s=300)
 ### Countdown.png
 This program counts down from 10 to 1, outputting each number to STDOUT. This program shows how turing-complete the language is by demonstrating arithmetic functionality, boolean algebra and looping/branching.
-![Countdown](/Countdown.png?raw=true)
+![Countdown](/Countdown.png?raw=true&s=200)
 ### DivideByZero.png
 This program encounters a division by zero error and prints the error to STDOUT
-![DivideByZero](/DivideByZero.png?raw=true)
+![DivideByZero](/DivideByZero.png?raw=true&s=500)
 ### Endless.png
 This program loops endlessly, or until the stack overflows
-![Endless.png](/Endless.png?raw=true)
+![Endless.png](/Endless.png?raw=true&s=500)
 ### HelloWorld.png
 Outputs Hello World! to STDOUT
-![HelloWorld](/HelloWorld.png?raw=true)
-
-
-
+![HelloWorld](/HelloWorld.png?raw=true&s=500)
