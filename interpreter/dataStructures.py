@@ -19,7 +19,6 @@ class position():
     def __deepcopy__(self, memodict):
         return position(copy.deepcopy(self.coords))
 
-
     # Functions to allow this datatype to behave in sets
     def __hash__(self):
         return hash(self.coords)
@@ -75,6 +74,7 @@ class codel():
 
     # Functions to allow this datatype to behave in sets
     def __hash__(self):
+        # Return a hash of a frozenset, because a normal set can't be hashed
         return hash(frozenset(self.codel))
 
     def __eq__(self, other):
