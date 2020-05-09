@@ -130,3 +130,5 @@ This program encounters a division by zero error and prints the error to STDOUT
 This program loops endlessly, or until the stack overflows
 ### HelloWorld.png
 Outputs Hello World! to STDOUT
+### StackRoll.png
+This program shows the functionality behind the stackroll function. It is recommended to run this in graphical mode, to show the stack changing
