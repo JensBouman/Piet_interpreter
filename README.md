@@ -1,7 +1,7 @@
 # Piet interpreter
 Piet is an esoteric programming language, which is based on the geometric artist Piet Mondriaan. The language specifies actions based on the transitions of colors. For a detailed explanation, please visit [the official website](https://www.dangermouse.net/esoteric/piet.html)
 
-_Note: I used the term codel as a synonym for color block throughoutt the code._
+_Note: I used the term codel as a synonym for color block throughout the code._
 
 ## Requirements
 The program requires the following libraries to be installed:
