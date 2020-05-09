@@ -1,14 +1,12 @@
 from typing import List, Tuple, Union
 import copy
 
-import interpreter.tokens as lexerTokens
-import interpreter.movement as movement
-import interpreter.errors as errors
+from interpreter import tokens as lexerTokens
+from interpreter import movementFunctions as movement
+from interpreter import errors as errors
 from interpreter.dataStructures import direction
 
 
-# TODO Nettere afhandeling errors (Union[Tuple[List[int], Tuple[int, int]], bool])
-# TODO Test cases maken per token
 def executeToken(token: lexerTokens.baseLexerToken, inputDirection: direction, dataStack: List[int]) -> Union[Tuple[direction, List[int]], BaseException]:
     """
     Executes the function associated with tokens
@@ -144,16 +142,16 @@ def divideOperator(inputDirection: direction, dataStack: List[int]) -> Union[Tup
     :return: Tuple with the new data stack and new pointers
     """
     newStack = dataStack.copy()
-    inputDirection = copy.deepcopy(inputDirection)
+    newDirection = copy.deepcopy(inputDirection)
     if len(newStack) < 2:
-        return (inputDirection, newStack)
+        return (newDirection, newStack)
 
     first = newStack.pop()
     second = newStack.pop()
     if second == 0:
         return ZeroDivisionError("Division by zero {}/{}".format(first, second))
     newStack.append(int(second / first))
-    return (inputDirection, newStack)
+    return (newDirection, newStack)
 
 
 def modOperator(inputDirection: direction, dataStack: List[int]) -> Union[Tuple[direction, List[int]], BaseException]:
@@ -170,7 +168,6 @@ def modOperator(inputDirection: direction, dataStack: List[int]) -> Union[Tuple[
     valA = newStack.pop()
     valB = newStack.pop()
     if valB == 0:
-        # TODO ERROR
         return ZeroDivisionError("Second value is 0: {}%{}".format(valA, valB))
     newStack.append(valB % valA)
     return (inputDirection, newStack)

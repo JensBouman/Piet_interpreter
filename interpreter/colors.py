@@ -2,7 +2,7 @@ from typing import Dict, Union
 
 import numpy as np
 
-import interpreter.errors as errors
+from interpreter import errors as errors
 
 class possiblePixels:
     def __init__(self):
@@ -52,10 +52,9 @@ def getPixelChange(colorStart: np.ndarray, colorEnd: np.ndarray) -> Union[Dict[s
         return {"hueChange": 0, "lightChange": 0}
 
     pixelsColors = possiblePixels()
-    # Converting np arrays to common lists
+    # Converting np arrays to normal lists
     colorStart = list(colorStart)[:3]
     colorEnd = list(colorEnd)[:3]
-
 
     if colorStart not in pixelsColors.colors:
         return errors.UnknownColorError("Color {} is not recognized as a correct color".format(colorStart))

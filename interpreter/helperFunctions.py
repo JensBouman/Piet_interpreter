@@ -1,11 +1,11 @@
-from typing import Union, List, Any
+from typing import Union
 import numpy as np
 
-import interpreter.imageWrapper as imageWrapper
-import interpreter.colors as colors
-import interpreter.movement as movement
-import interpreter.tokens as tokens
-import interpreter.errors as errors
+from interpreter import imageFunctions as imageWrapper
+from interpreter import colors as colors
+from interpreter import movementFunctions as movement
+from interpreter import tokens as tokens
+from interpreter import errors as errors
 from interpreter.dataStructures import edge
 
 

@@ -1,7 +1,10 @@
 import argparse
+import sys
 
-from interpreter import executionFunctions as executionFunctions
-from interpreter import imageWrapper as imageWrapper
+sys.setrecursionlimit(100000)
+
+from interpreter import executeFunctions as executionFunctions
+from interpreter import imageFunctions as imageWrapper
 from GUI import main as GUIMain
 
 parser = argparse.ArgumentParser(description='Interprets a piet image')
@@ -17,7 +20,6 @@ if not args.graphical:
     if args.verbose:
         print("\nTotal steps: {}".format(executionFunctions.takeStep.counter))
 else:
-    print("GUI TIME!")
     app = GUIMain.GUI()
     app.setFileText(args.file)
     app.loadFile()

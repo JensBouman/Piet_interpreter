@@ -1,4 +1,5 @@
 from typing import Union
+import operator
 
 from interpreter.dataStructures import direction, position, codel
 
@@ -110,7 +111,6 @@ def flip(inputDirection: direction) -> direction:
     return direction((flipDP(inputDirection.pointers[0]), inputDirection.pointers[1]))
 
 
-# TODO FIX KEYERROR
 def getNextPosition(startPosition: position, directionPointer: int) -> Union[position, KeyError]:
     """
     Finds next position along the direction pointer
@@ -155,49 +155,44 @@ def findEdge(inputCodel: codel, inputDirection: direction) -> Union[position, bo
     dp = inputDirection.pointers[0]
     cc = inputDirection.pointers[1]
 
+    # Right side
     if dp == 0:
         edgePosition = max(inputCodel.codel, key=lambda lambdaPos: lambdaPos.coords[0])
-        for pos in inputCodel.codel:
-            if pos.coords[0] == edgePosition.coords[0]:
-                # -> ^ Right and up
-                if cc == 0 and pos.coords[1] < edgePosition.coords[1]:
-                    edgePosition = pos
-                # -> V Right and down
-                if cc == 1 and pos.coords[1] > edgePosition.coords[1]:
-                    edgePosition = pos
-        return edgePosition
+        maxValues = list(filter(lambda lambdaPos: lambdaPos.coords[0] == edgePosition.coords[0], inputCodel.codel))
+        if cc == 0:
+            # -> ^ Right and up
+            return min(maxValues, key=lambda lambdaPos: lambdaPos.coords[1])
+        else:
+            # -> V Right and down
+            return max(maxValues, key=lambda lambdaPos: lambdaPos.coords[1])
+    # Bottom side
     elif dp == 1:
         edgePosition = max(inputCodel.codel, key=lambda lambdaPos: lambdaPos.coords[1])
-        for pos in inputCodel.codel:
-            if pos.coords[1] == edgePosition.coords[1]:
-                # V -> Down and right
-                if cc == 0 and pos.coords[0] > edgePosition.coords[0]:
-                    edgePosition = pos
-                # V <- Down and left
-                elif cc == 1 and pos.coords[0] < edgePosition.coords[0]:
-                    edgePosition = pos
-        return edgePosition
+        maxValues = list(filter(lambda lambdaPos: lambdaPos.coords[1] == edgePosition.coords[1], inputCodel.codel))
+        if cc == 0:
+            # V -> Down and right
+            return max(maxValues, key=lambda lambaPos: lambaPos.coords[0])
+        else:
+            # V <- Down and left
+            return min(maxValues, key=lambda lambdaPos: lambdaPos.coords[0])
+    # Left side
     elif dp == 2:
         edgePosition = min(inputCodel.codel, key=lambda lambdaPos: lambdaPos.coords[0])
-        for pos in inputCodel.codel:
-            if pos.coords[0] == edgePosition.coords[0]:
-                # <- V Left and down
-                if cc == 0 and pos.coords[1] > edgePosition.coords[1]:
-                    edgePosition = pos
-                # <- ^ left and up
-                elif cc == 1 and pos.coords[1] < edgePosition.coords[1]:
-                    edgePosition = pos
-        return edgePosition
-    elif dp == 3:
+        minValues = list(filter(lambda lambdaPos: lambdaPos.coords[0] == edgePosition.coords[0], inputCodel.codel))
+        if cc == 0:
+            # <- V Left and down
+            return max(minValues, key=lambda lambaPos: lambaPos.coords[1])
+        else:
+            # <- ^ left and up
+            return min(minValues, key=lambda lambdaPos: lambdaPos.coords[1])
+
+    # Top side
+    else: # dp == 3
         edgePosition = min(inputCodel.codel, key=lambda lambdaPos: lambdaPos.coords[1])
-        for pos in inputCodel.codel:
-            if pos.coords[1] == edgePosition.coords[1]:
-                # ^ <- Up and left
-                if cc == 0 and pos.coords[0] < edgePosition.coords[0]:
-                    edgePosition = pos
-                # ^ -> Up and right
-                elif cc == 1 and pos.coords[0] > edgePosition.coords[0]:
-                    edgePosition = pos
-        return edgePosition
-    else:
-        raise SyntaxError("DirectionPointer '{}' is unknown".format(dp))
+        maxValues = list(filter(lambda lambdaPos: lambdaPos.coords[1] == edgePosition.coords[1], inputCodel.codel))
+        if cc == 0:
+            # ^ <- Up and left
+            return min(maxValues, key=lambda lambaPos: lambaPos.coords[0])
+        else:
+            # ^ -> Up and right
+            return max(maxValues, key=lambda lambdaPos: lambdaPos.coords[0])

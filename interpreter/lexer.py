@@ -3,10 +3,10 @@ import copy
 import numpy as np
 
 import interpreter.colors as colors
-import interpreter.imageWrapper as imageWrapper
+import interpreter.imageFunctions as imageWrapper
 import interpreter.tokens as tokens
 import interpreter.helperFunctions as helperFunctions
-import interpreter.movement as movement
+import interpreter.movementFunctions as movement
 from interpreter.dataStructures import position, codel, edge, graphNode, graph, direction
 
 

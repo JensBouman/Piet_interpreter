@@ -54,6 +54,7 @@ def getCodel(image: np.ndarray, inputPosition: position, foundPixels: codel = No
     if inputPosition in foundPixels.codel:
         return foundPixels
 
+    # Adjacent white colors don't form a codel
     if colors.isWhite(getPixel(image, inputPosition)):
         foundPixels.codel.add(inputPosition)
         return foundPixels

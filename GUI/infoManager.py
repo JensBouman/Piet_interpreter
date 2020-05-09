@@ -1,7 +1,7 @@
-import interpreter.imageWrapper as imageWrapper
+import interpreter.imageFunctions as imageWrapper
 import interpreter.colors as colors
 import interpreter.tokens as lexerTokens
-import interpreter.movement as movement
+import interpreter.movementFunctions as movement
 from interpreter.dataStructures import direction
 
 class infoManager():
@@ -15,25 +15,11 @@ class infoManager():
         self.updateProgramStateInfo(programState)
 
     def updateGeneralinfo(self, image, graph, programState):
-        self.updateCodelInfo(image, programState.position)
         self.updateEdgesInfo(image, graph, programState)
 
     def updateProgramStateInfo(self, programState):
         self.updateStackInfo(programState.dataStack)
         self.updatePointersInfo(programState.position, programState.direction)
-
-    def updateCodelInfo(self, image, newPosition):
-        infoMessage = self.builder.get_object('positionInfoMessage', self.generalInfo)
-        if colors.isBlack(imageWrapper.getPixel(image, newPosition)):
-            infoMessage.configure(text="Black pixels are no codel, and have no edges")
-            return None
-
-        baseString = "Selected codel contains:\n"
-        codel = imageWrapper.getCodel(image, newPosition)
-        for position in codel.codel:
-            baseString += "{}\n".format(position)
-
-        infoMessage.configure(text=baseString.strip('\n'))
 
 
     def updateEdgesInfo(self, image, inputGraph, programState):

@@ -1,7 +1,7 @@
 from typing import Set, Tuple, Dict, List
 import copy
 
-import interpreter.tokens as tokens
+from interpreter import tokens as tokens
 
 class position():
     """
@@ -125,6 +125,9 @@ class graph():
         return str(self)
 
 class programState():
+    """
+    The program state contains the graph of the program, the position, direction and stack.
+    """
     def __init__(self, newGraph:  graph, newPosition: position, newDirection: direction, dataStack: List[int] = None):
         if dataStack is None:
             dataStack = []
@@ -135,7 +138,7 @@ class programState():
         self.dataStack = dataStack
 
     def __str__(self):
-        return "{pos} / {pointers}. Stack: {stack}".format(pos=self.position, pointers=self.direction, stack=self.dataStack)
+        return "Pos:{pos} / {pointers}. Stack: {stack}".format(pos=self.position, pointers=self.direction, stack=self.dataStack)
 
     def __repr__(self):
         return str(self)

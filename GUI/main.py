@@ -1,17 +1,10 @@
-# helloworld.py
 import pygubu
-import sys
 import os
 
-sys.path.insert(0, "GUI/TKinter/.")
-from interpreter import imageWrapper as imageWrapper
+from interpreter import imageFunctions as imageWrapper
 from interpreter import lexer as lexer
-from interpreter import tokens as lexerTokens
-from interpreter import colors as colors
-from interpreter import movement as movement
-from interpreter import executionFunctions as main
+from interpreter import executeFunctions as main
 from interpreter.dataStructures import programState, direction, position
-import threading
 
 from GUI import infoManager
 from GUI import canvasManager
@@ -20,7 +13,7 @@ from GUI import canvasManager
 class GUI:
     def __init__(self):
         # In pixelWidth/height per pixel. scaleSize = 25 means that every pixel will show as a 25x25 square
-        self.scaleSize = 25
+        self.scaleSize = 15
         # In percentage
         self.executionSpeed = 15
 
@@ -38,13 +31,13 @@ class GUI:
         self.canvas = None
 
         #1: Create a builder
-        self.builder = builder = pygubu.Builder()
+        self.builder = pygubu.Builder()
 
         #2: Load an ui file
-        builder.add_from_file("{}/tkinterLayout.ui".format(os.path.abspath(os.path.dirname(__file__))))
+        self.builder.add_from_file("{}/tkinterLayout.ui".format(os.path.abspath(os.path.dirname(__file__))))
 
         #3: Create the mainwindow
-        self.mainwindow = builder.get_object('rootWindow')
+        self.mainwindow = self.builder.get_object('rootWindow')
 
         self.initializeFrames()
         self.initializeCallbacks()
@@ -60,14 +53,16 @@ class GUI:
         self.builder.connect_callbacks({
             'loadFile': self.loadFile,
             'setScale': self.setScale,
-            'takeStep': self.takeStep,
-            'setExecutionSpeed': self.setExecutionSpeed,
-            'setBreakpoint': self.setBreakpoint,
-            'runProgram': self.runProgram,
-            'updateHighlight': self.toggleHighlight
+            'takeStep': self.takeStep
         })
 
-        self.canvas.bind("<Button-1>", self.canvasPressed)
+        horizontalBar = self.builder.get_object("canvasHorizontalScroll", self.canvasFrame)
+        verticalBar = self.builder.get_object("canvasVerticalScroll", self.canvasFrame)
+        horizontalBar.config(command = self.canvas.xview)
+        verticalBar.config(command = self.canvas.yview)
+        self.canvas.config(xscrollcommand=horizontalBar.set, yscrollcommand=verticalBar.set)
+        self.canvas.configure(scrollregion=self.canvas.bbox("all"))
+
 
     def initializeFrames(self):
         self.optionBar = self.builder.get_object('optionBar', self.mainwindow)
@@ -75,8 +70,8 @@ class GUI:
         self.actionBar = self.builder.get_object('actionBar', self.mainwindow)
         self.generalInfoFrame = self.builder.get_object("generalInfoFrame", self.content)
         self.programStateInfoFrame = self.builder.get_object("programStateInfoFrame", self.content)
-        canvasFrame = self.builder.get_object('canvasFrame', self.content)
-        self.canvas = self.builder.get_object('canvas', canvasFrame)
+        self.canvasFrame = self.builder.get_object('canvasFrame', self.content)
+        self.canvas = self.builder.get_object('canvas', self.canvasFrame)
 
 
     def update(self):
@@ -85,6 +80,7 @@ class GUI:
         self.canvasManager.updateImage(self.image)
         self.canvasManager.updateProgramState(self.programState)
         self.canvasManager.updateCanvas()
+        self.canvas.configure(scrollregion=self.canvas.bbox("all"))
 
 
     def takeStep(self):
@@ -92,77 +88,59 @@ class GUI:
             return None
 
         newProgramState = main.takeStep(self.image, self.programState)
-        if isinstance(newProgramState, bool):
-            return False
+        # Error encountered, close window
+        if isinstance(newProgramState, BaseException):
+            self.mainwindow.destroy()
+            self.mainwindow.quit()
+            raise newProgramState
 
         self.programState = newProgramState
         self.selectedPosition = self.programState.position
         self.update()
-        print("Take step!")
         return True
 
 
-    def setBreakpoint(self):
-        print("BREAKPOINT")
-
     def setFileText(self, filePath):
-        print("Filepath: {}".format(filePath))
         self.builder.get_object("fileNameEntry", self.optionBar).delete(0, len(self.builder.get_object("fileNameEntry", self.optionBar).get()))
         self.builder.get_object("fileNameEntry", self.optionBar).insert(0, filePath)
-        print("Get filepath: {}".format(self.builder.get_object("fileNameEntry", self.optionBar).get()))
+
 
     def setExecutionSpeed(self, pos):
         if 0 < float(pos) < 100:
             self.executionSpeed = float(pos)
 
-    def toggleHighlight(self):
-        print(self.builder.get_object("highlightEdgeCheck", self.actionBar).instate(['selected']))
-
-    def getWaitTime(self):
-        return self.executionSpeed/100*self.maxWait
-
-    def runProgram(self):
-        if self.graph is None or self.image is None:
-            return None
-
-        step = self.takeStep()
-        if step:
-            timer = threading.Timer(self.getWaitTime(), self.runProgram)
-            timer.start()
-            return True
-        else:
-            return False
-
 
     def setScale(self):
         scaleValue = int(self.builder.get_object('scaleEntry', self.optionBar).get())
         if 0 < scaleValue < 100:
+            self.canvasManager.clearCanvas()
             self.scaleSize = int(scaleValue)
             self.update()
-        print("SCALE")
+            self.canvasManager.drawImage()
+            self.canvasManager.updateCanvas()
 
 
     def loadFile(self):
         fileName = self.builder.get_object('fileNameEntry', self.optionBar).get()
         if len(fileName) < 1:
             return None
+        try:
+            tmpImage = imageWrapper.getImage(fileName)
+        except FileNotFoundError:
+            edgeInfo = self.infoManager.builder.get_object('codelEdgesMessage', self.infoManager.generalInfo)
+            edgeInfo.configure(text="The file '{}' could not be found".format(fileName))
+            return False
 
-        self.image = imageWrapper.getImage(fileName)
-        self.graph = lexer.graphImage(self.image)[0]
+        tmpResult = lexer.graphImage(tmpImage)
+        if len(tmpResult[1]) != 0:
+            edgeInfo = self.infoManager.builder.get_object('codelEdgesMessage', self.infoManager.generalInfo)
+            edgeInfo.configure(text="The following exceptions occured while making the graph:\n{}".format("".join(list(map(lambda x: "\t{}\n".format(x), tmpResult[1])))))
+            return False
+
+        self.image = tmpImage
+        self.graph = tmpResult[0]
         self.programState = programState(self.graph, position((0,0)), direction((0,0)))
-
+        # Reset previous state
+        self.canvasManager.previousProgramState = None
+        self.canvasManager.programState = None
         self.update()
-        print("LOAD FILE!")
-
-
-    def canvasPressed(self, event):
-        unscaled_x = int(event.x / self.scaleSize)
-        unscaled_y = int(event.y / self.scaleSize)
-
-        self.selectedPosition = (unscaled_x, unscaled_y)
-        self.update()
-
-
-if __name__ == '__main__':
-    app = GUI()
-    app.run()
