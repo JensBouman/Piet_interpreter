@@ -46,7 +46,7 @@ This interpreter implemented the following should-haves:
 - Instruction-and-show-off video. Although I haven't made a video, I did make a infographic, detailing how the interpreter works. It can be found [here](#interpreter-infographic)
 - Visualisation through a TKinter GUI, powered by the Pygubu library: 
 
-![tkinter layout](/Info/GUI_Layout.png?raw=true)
+![tkinter layout](/Info/GUI_Layout.PNG?raw=true)
 
 ## Limitations
 Too large images will cause the stack to overflow. The maximum size of the image is dependent on the contents.
