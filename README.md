@@ -111,7 +111,7 @@ python main.py --file Countdown.py -g
 python main.py --file Countdown.py --graphical
 ```
 This command should open the interface:
-![countdown GUI](/Info/countdown_GUI.PNG)
+![countdown GUI](/Info/countdown_GUI.PNG?raw=true)
 
 
 ## Interpreter infographic
