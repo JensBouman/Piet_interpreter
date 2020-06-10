@@ -25,29 +25,6 @@ This interpreter can do the following:
     - Can scale images, to better visualize the program
 
 
-### Must-haves
-The must-haves are implemented as follows:
-- Classes are implemented as Tokens, Errors and data structures
-- Inheritance is implemented with Tokens and Errors
-- Object printing is implemented with both \_\_str__ and \_\_repr__ functions
-- A decorator is used to provide additional info when running the interpreter with the ```-v``` command
-- The entire program (Except for the GUI) is programmed according to the FP programming paradigm
-- All functions (Except for the GUI) are type-annotated using the python typing module
-- The following higher-order functions are used:
-    - Map
-    - Filter
-    - Max
-    - Min
-
-### Should-haves
-This interpreter implemented the following should-haves:
-- Custom error messaging in both the Lexing and running steps of the interpreter, for example: detailing which colors at which positions are unknown
-- Advanced Language Features. All Piet commands are implemented, which includes commands such as modulo, stack rolling, and IO
-- Instruction-and-show-off video. Although I haven't made a video, I did make a infographic, detailing how the interpreter works. It can be found [here](#interpreter-infographic)
-- Visualisation through a TKinter GUI, powered by the Pygubu library: 
-
-![tkinter layout](/Info/GUI_Layout.PNG?raw=true)
-
 ## Limitations
 Too large images will cause the stack to overflow. The maximum size of the image is dependent on the contents.
 The interpreter also can't distinguish between images with differen pixel-sizes. Due to the nature of Piet, enlarging an image will cause the interpreter to produce different results
