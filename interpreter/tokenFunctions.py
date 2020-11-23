@@ -258,7 +258,7 @@ def inNOperator(inputDirection: direction, dataStack: List[int]) -> Tuple[direct
     inputDirection = copy.deepcopy(inputDirection)
     newVal = input("Input number: ")
     if newVal.isdigit():
-        newStack.append(newVal)
+        newStack.append(int(newVal))
     return (inputDirection, newStack)
 
 
